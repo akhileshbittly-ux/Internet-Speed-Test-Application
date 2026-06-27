@@ -1,3 +1,6 @@
 streamlit
 speedtest-cli
 pandas
+requests
+streamlit-geolocation
+geopy
