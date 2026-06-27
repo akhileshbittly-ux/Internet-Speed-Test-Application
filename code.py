@@ -4,15 +4,33 @@ import pandas as pd
 from datetime import datetime
 import json
 import requests
+from streamlit_geolocation import streamlit_geolocation
 
-response = requests.get("https://ipinfo.io/json")
-location_data = response.json()
 
-user_city = location_data.get("city")
-user_region = location_data.get("region")
-user_country = location_data.get("country")
+from geopy.geocoders import Nominatim
 
-st.write(f"Your Location: {user_city}, {user_region}, {user_country}")
+location = streamlit_geolocation()
+
+if location and location.get("latitude"):
+    lat = location["latitude"]
+    lon = location["longitude"]
+
+    geolocator = Nominatim(user_agent="speed_test_app")
+    place = geolocator.reverse(f"{lat}, {lon}")
+
+    address = place.raw.get("address", {})
+
+    city = (
+        address.get("city")
+        or address.get("town")
+        or address.get("village")
+        or "Unknown"
+    )
+
+    state = address.get("state", "Unknown")
+    country = address.get("country", "Unknown")
+
+    st.success(f"Your Location: {city}, {state}, {country}")
 
 st.set_page_config(
     page_title="Internet Speed Test",
@@ -44,10 +62,10 @@ if st.button("Start Speed Test"):
             )
 
             result = {
-               "Your Location": f"{user_city}, {user_region}",
-                "Country": user_country,
+                "Your Location": f"{city}, {state}, {country}",
                 "Server Host": server["host"],
                 "Server Location": server["name"],
+                "Server Country": server["country"],
                 "Ping (ms)": round(ping, 2),
                 "Download (Mbps)": round(download, 2),
                 "Upload (Mbps)": round(upload, 2),
