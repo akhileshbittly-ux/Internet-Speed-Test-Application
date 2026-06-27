@@ -49,7 +49,7 @@ if st.button("Start Speed Test"):
     with st.spinner("Running speed test..."):
 
         try:
-            st_obj = speedtest.Speedtest()
+            st_obj = speedtest.Speedtest(secure=True)
 
             server = st_obj.get_best_server()
 
