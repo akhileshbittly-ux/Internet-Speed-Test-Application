@@ -3,6 +3,16 @@ import speedtest
 import pandas as pd
 from datetime import datetime
 import json
+import requests
+
+response = requests.get("https://ipinfo.io/json")
+location_data = response.json()
+
+user_city = location_data.get("city")
+user_region = location_data.get("region")
+user_country = location_data.get("country")
+
+st.write(f"Your Location: {user_city}, {user_region}, {user_country}")
 
 st.set_page_config(
     page_title="Internet Speed Test",
@@ -34,14 +44,16 @@ if st.button("Start Speed Test"):
             )
 
             result = {
+               "Your Location": f"{user_city}, {user_region}",
+                "Country": user_country,
                 "Server Host": server["host"],
-                "Location": server["name"],
-                "Country": server["country"],
+                "Server Location": server["name"],
                 "Ping (ms)": round(ping, 2),
                 "Download (Mbps)": round(download, 2),
                 "Upload (Mbps)": round(upload, 2),
                 "Time": current_time
             }
+
 
             st.success("Speed Test Completed")
 
